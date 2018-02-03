@@ -4,6 +4,8 @@ header('Content-Type: application/json');
 
 include("../config/config.php");
 
+$servername = $config["servername"];
+
 $now = new DateTime();
 $CRLF = "\n\r";
 

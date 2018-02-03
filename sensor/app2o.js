@@ -1,5 +1,7 @@
 let barGraph ;
 
+let sensorDayTimeFormat = "HH:mm";
+
 $(document).ready(function(){
 	let ctx = $("#mycanvas");
 
@@ -41,11 +43,11 @@ $(document).ready(function(){
 				xAxes: [{
 					type: 'time',
 					time: {
-						parser: 'HH:mm',
+						parser: sensorDayTimeFormat,
 						unit: 'minute',
 						stepSize: 60,
 						displayFormats: {
-							minute: 'HH:mm'
+							minute: sensorDayTimeFormat,
 						}
 					}
 				}]
@@ -57,28 +59,38 @@ $(document).ready(function(){
 });
 
 function updateGraph() {
+	let data = {
+        field: 1,
+        wert: 9,
+        sensor: true,
+	};
+	if(barGraph.data.labels.length !== 0) {
+        data.lasttimestamp = barGraph.data.labels[barGraph.data.labels.length - 2].format(sensorDayTimeFormat);
+	} else {
+		data.lasttimestamp = "00:00";
+	}
     $.ajax({
-        url: "./sensor/sensor-tag.php?field=1&wert=9&sensor",
+        url: "./sensor/sensor-tag.php",
+		data,
         method: "GET",
         success: function(data) {
             barGraph.data.labels = [];
             barGraph.data.datasets[0].data = [];
-            //barGraph.data.datasets[1].data = [];
 
             let minTime = moment();
 
             for(let i in data) {
-                let iTime = moment(data[i].zeit, 'HH:mm');
+                let iTime = moment(data[i].zeit, sensorDayTimeFormat);
                 if(iTime.isBefore(minTime)) {
                     minTime = iTime;
                 }
-                barGraph.data.labels.push(data[i].zeit);
+                barGraph.data.labels.push(iTime);
                 barGraph.data.datasets[0].data.push(data[i].value);
-                //barGraph.data.datasets[1].data.push(data[i].value * (.95+Math.random()/22));
             }
 
             minTime.minute(0);
             barGraph.options.scales.xAxes[0].time.min = minTime;
+            barGraph.data.labels.push(moment("24:00", sensorDayTimeFormat));
 
             barGraph.update();
         },

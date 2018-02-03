@@ -13,9 +13,12 @@ $dbname = $config["dbname"];
 $now = new DateTime();
 $CRLF = "\n\r";
 
+
 $fieldToGet = $_GET['field'];
 $val = $_GET['wert'];
 $sensor = $_GET['sensor'];
+// To know what to send to the client
+$lastTimeStamp = $_GET['lasttimestamp'];
 
 $mysqli = new mysqli($servername, $username, $password, $dbname);
 if ($mysqli->connect_errno) {
@@ -32,10 +35,8 @@ $query = "SELECT DATE_FORMAT(logdata,'%H:%i') zeit, value FROM `sensor-tag` orde
 $result = $mysqli->query($query);
 
 $rows = $result->fetch_all (MYSQLI_ASSOC);  //mixed mysqli_result::fetch_all ([ int $resulttype = MYSQLI_NUM ] )
-$rows[]=    array("zeit"=>"23:59");
+//$rows[] = array("zeit"=>"24:00");
 
-//print_r($rows);
-
-print	 json_encode($rows);
+print json_encode($rows);
 
     

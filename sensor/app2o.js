@@ -13,7 +13,9 @@ $(document).ready(function(){
 						backgroundColor: window.chartColors.red,
 						borderColor: window.chartColors.red,
 						fill: false,
-						data: []
+						data: [],
+                        pointRadius: 0,
+                        lineTension: 0,
 					},{
 						label: '1.Terasse',
 						backgroundColor: window.chartColors.green,
@@ -28,6 +30,13 @@ $(document).ready(function(){
 				}
 			},
 		options: {
+            animation: {
+                duration: 0,
+            },
+            hover: {
+                animationDuration: 0,
+            },
+            responsiveAnimationDuration: 0,
 			scales: {
 				xAxes: [{
 					type: 'time',
@@ -72,7 +81,6 @@ function updateGraph() {
             barGraph.options.scales.xAxes[0].time.min = minTime;
 
             barGraph.update();
-
         },
         error: function(data) {
             console.log(data);

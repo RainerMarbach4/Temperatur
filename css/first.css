@@ -4,6 +4,7 @@ p {
     font-size: 125%;
     color:blue
 }
+
 .temp, #temperatur2 {
     border: 1px solid forestgreen;
 }

@@ -1,62 +1,101 @@
-let gauge;
+String.prototype.replaceAll = function(search, replacement) {
+    let target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
 
-$(document).ready(function () {
-    let opts = {
-        angle: 0, // The span of the gauge arc
-        lineWidth: 0.44, // The line thickness
-        radiusScale: 0.99, // Relative radius
+let gaugeStore = {
+    preCfg: {
+        angle: 0,
+        lineWidth: 0.44,
+        radiusScale: 1,
         pointer: {
-            length: 0.51, // // Relative to gauge radius
-            strokeWidth: 0.035, // The thickness
-            color: '#000000' // Fill color
+            length: 0.5,
+            strokeWidth: 0.035,
+            color: '#000000'
         },
-        limitMax: false,     // If false, max value increases automatically if value > maxValue
-        limitMin: false,     // If true, the min value of the gauge will be fixed
-        colorStart: '#6FADCF',   // Colors
-        colorStop: '#8FC0DA',    // just experiment with them
-        strokeColor: '#E0E0E0',  // to see which ones work best for you
-        generateGradient: true,
-        highDpiSupport: true,     // High resolution support
+        limitMax: false,
+        limitMin: false,
+        highDpiSupport: true,
 
-        // renderTicks is Optional
         renderTicks: {
-            divisions: 5,
+            divisions: 9,
             divWidth: 1.1,
             divLength: 0.7,
             divColor: '#333333',
-            subDivisions: 3,
+            subDivisions: 5,
             subLength: 0.5,
             subWidth: 0.6,
             subColor: '#666666'
         },
 
         staticLabels: {
-            font: "10px sans-serif",
-            labels: [-30, 60],
+            font: "10px 'Roboto', sans-serif",
+            labels: [-30, 0, 30, 60],
         },
+
+        // percentColors: [[0.0, "#6495ed"], [0.5, "#30B32D"], [1.0, "#F03E3E"]],
 
         staticZones: [
             {strokeStyle: "#6495ed", min: -30, max: 10}, // Blue #6495ed
             {strokeStyle: "#30B32D", min: 10, max: 30}, // Green #30B32D
             {strokeStyle: "#F03E3E", min: 30, max: 60}, // Red #F03E3E
         ],
-    };
+    },
 
-    let target = document.getElementById('canvas-preview');
-    gauge = new Gauge(target).setOptions(opts);
-    gauge.maxValue = 60;
-    gauge.animationSpeed = 6;
-    let textRenderer = new TextRenderer(document.getElementById('preview-textfield'));
-    textRenderer.render = function () {
-        this.el.innerHTML = parseFloat(Math.round(gauge.displayedValue * 100) / 100).toFixed(2);
-    };
-    gauge.setTextField(textRenderer);
-    gauge.setMinValue(-30);
-    gauge.set(2.5);
+    preset: '' +
+    '<div id="gauge-{{id}}">\n' +
+    '    <div class="sensor-value"></div>\n' +
+    '    <canvas width=300 height=150 class="sensor-gauge"></canvas>\n' +
+    '    <div class="sensor-name">{{name}}</div>\n' +
+    '</div>',
+
+    container: null,
+
+    gauges: [],
+};
+
+class OwnGauge {
+    constructor(container, name, options=gaugeStore.preCfg, preset=gaugeStore.preset) {
+        container = $(container);
+        let obj = $(preset.replaceAll("{{id}}", name).replaceAll("{{name}}", name));
+        container.append(obj);
+        let own = this;
+        own.text = obj.find('.sensor-value');
+        own.canvas = obj.find('.sensor-gauge');
+        own.name = obj.find('.sensor-name');
+        own.name.text(name);
+
+        own.gauge = new Gauge(own.canvas[0]).setOptions(options);
+        own.gauge.maxValue = 60;
+        own.gauge.animationSpeed = 6;
+        own.textRenderer = new TextRenderer(own.text[0]);
+        own.textRenderer.render = function () {
+            this.el.innerHTML = parseFloat((Math.round(own.gauge.displayedValue * 100) / 100) + "").toFixed(2);
+        };
+        own.gauge.setTextField(own.textRenderer);
+        own.gauge.setMinValue(-30);
+        own.gauge.set(0);
+    }
+
+    set(value) {
+        this.gauge.set(value);
+    }
+}
+
+$(document).ready(function () {
+    gaugeStore.container = $('#gauges');
+
+    updateGauges();
+    setInterval(updateGauges, 60 * 1000);
 });
 
-function updateGauge() {
+function updateGauges() {
     $.getJSON('google/getData.php', function (json) {
-        console.log(json);
+        $.each(json, function (name, value) {
+            if(!(name in gaugeStore.gauges)) {
+                gaugeStore.gauges[name] = new OwnGauge(gaugeStore.container, name);
+            }
+            gaugeStore.gauges[name].set(value);
+        });
     });
 }

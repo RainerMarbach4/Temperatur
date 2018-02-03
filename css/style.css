@@ -1,0 +1,18 @@
+.center {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.sensor-name {
+    font-size: 120%;
+}
+
+.sensor-value {
+
+}
+
+.sensor-gauge {
+
+}

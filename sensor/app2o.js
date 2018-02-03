@@ -1,7 +1,9 @@
-$(document).ready(function(){
-	var ctx = $("#mycanvas");
+let barGraph ;
 
-	var barGraph = new Chart(ctx, {
+$(document).ready(function(){
+	let ctx = $("#mycanvas");
+
+	barGraph = new Chart(ctx, {
 		type: 'line',
 		data: {
 				labels: [],
@@ -41,38 +43,39 @@ $(document).ready(function(){
 			}
 		}
 			});
-	function updateGraph() {
-	$.ajax({
-		url: "./sensor/sensor-tag.php?field=1&wert=9&sensor",
-		method: "GET",
-		success: function(data) {
-			barGraph.data.labels = [];
-			barGraph.data.datasets[0].data = [];
-			//barGraph.data.datasets[1].data = [];
-			
-			let minTime = moment();
-
-			for(var i in data) {
-				let iTime = moment(data[i].zeit, 'HH:mm')
-				if(iTime.isBefore(minTime)) {
-					minTime = iTime;
-				}
-				barGraph.data.labels.push(data[i].zeit);
-				barGraph.data.datasets[0].data.push(data[i].value);
-				//barGraph.data.datasets[1].data.push(data[i].value * (.95+Math.random()/22));
-			}
-			
-			minTime.minute(0);
-			barGraph.options.scales.xAxes[0].time.min = minTime;
-			
-			barGraph.update();
-		
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
 	updateGraph();
 	setInterval(updateGraph, 60000);
 });
+
+function updateGraph() {
+    $.ajax({
+        url: "./sensor/sensor-tag.php?field=1&wert=9&sensor",
+        method: "GET",
+        success: function(data) {
+            barGraph.data.labels = [];
+            barGraph.data.datasets[0].data = [];
+            //barGraph.data.datasets[1].data = [];
+
+            let minTime = moment();
+
+            for(let i in data) {
+                let iTime = moment(data[i].zeit, 'HH:mm');
+                if(iTime.isBefore(minTime)) {
+                    minTime = iTime;
+                }
+                barGraph.data.labels.push(data[i].zeit);
+                barGraph.data.datasets[0].data.push(data[i].value);
+                //barGraph.data.datasets[1].data.push(data[i].value * (.95+Math.random()/22));
+            }
+
+            minTime.minute(0);
+            barGraph.options.scales.xAxes[0].time.min = minTime;
+
+            barGraph.update();
+
+        },
+        error: function(data) {
+            console.log(data);
+        }
+    });
+}

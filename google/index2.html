@@ -1,0 +1,59 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        google.charts.load('current', {'packages': ['gauge']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['!!Label', 'Value'],
+                ['!!Garten', 26.5],
+                ['Hochbeet', 26.5],
+                ['Frühbeet', -6.8]
+            ]);
+
+            var jsonData = $.ajax({
+                url: "getData.php",
+                dataType: "json",
+                async: false
+            }).responseText;
+
+            var options = {
+                width: 800, height: 220,
+                yellowFrom: -35, yellowTo: 10,
+                greenFrom: 10, greenTo: 30,
+                redFrom: 30, redTo: 60,
+                yellowColor: '#0000FF',
+                minorTicks: 5,
+                min: -35,
+                max: 55
+            };
+
+            var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+
+            chart.draw(data, options);
+
+            setInterval(function () {
+                data.setValue(0, 1, -25.7 + Math.round(60 * Math.random()));
+                chart.draw(data, options);
+            }, 10000);
+            setInterval(function () {
+                data.setValue(0, 1, -35.7 + Math.round(60 * Math.random()));
+                chart.draw(data, options);
+            }, 13000);
+            setInterval(function () {
+                data.setValue(1, 1, -30 + Math.round(60 * Math.random()));
+                chart.draw(data, options);
+            }, 5000);
+
+        }
+    </script>
+</head>
+<body>
+<div id="chart_div" style="width: 400px; height: 120px;"></div>
+</body>
+</html>

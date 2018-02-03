@@ -1,0 +1,15 @@
+<script type="text/javascript">
+    // http://stackoverflow.com/questions/5681380/refresh-a-table-with-jquery-ajax-every-5-seconds
+    $(document).ready(function () {
+        refreshTable();
+    });
+
+    function refreshTable() {
+        $('#temperatur').load('getTable.php?q=alles', function () {
+            setTimeout(refreshTable, 60000);
+        });
+
+    }
+</script>
+</body>
+</html>

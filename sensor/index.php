@@ -1,8 +1,12 @@
 <?php
-$servername = "localhost";
-$username = "d025a46b"; // username for your database
-$password = "rl,.13";
-$dbname = "d025a46b"; // Name of database
+
+include("../config/config.php");
+
+$servername = $config["servername"];
+$username = $config["username"];
+$password = $config["password"];
+$dbname = $config["dbname"];
+
 $now = new DateTime();
 $CRLF = "\n\r";
 

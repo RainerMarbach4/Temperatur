@@ -90,6 +90,7 @@ $(document).ready(function () {
     setInterval(updateGauges, 60 * 1000);
 });
 
+
 function updateGauges() {
     $.getJSON('./php/getData.php', function (json) {
         $.each(json, function (name, value) {

@@ -21,7 +21,10 @@ if ($mysqli->connect_errno) {
 $mysqli->set_charset('utf8');
 
 
+$rounded_seconds = round($now->getTimestamp() / (10 * 60)) * (10 * 60);
+$now->setTimestamp($rounded_seconds);
 $datenow = $now->format("Y-m-d H:i:00");
+
 $hvalue = $value;
 
 $sql = "INSERT INTO `DataTable` (`id`, `logdata`, `sensor`, `value`) VALUES (NULL, NOW(), '$sensor', $val);";

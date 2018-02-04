@@ -5,7 +5,7 @@
     });
 
     function refreshTable() {
-        $('#temperatur').load('getTable.php?q=alles', function () {
+        $('#temperatur').load('php/getTable2.php?q=alles', function () {
             setTimeout(refreshTable, 60000);
         });
 

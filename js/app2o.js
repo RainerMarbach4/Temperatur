@@ -70,7 +70,7 @@ function updateGraph() {
 		data.lasttimestamp = "00:00";
 	}
     $.ajax({
-        url: "./sensor/sensor-tag.php",
+        url: "./sensor/sensor-tag2.php",
 		data,
         method: "GET",
         success: function(data) {

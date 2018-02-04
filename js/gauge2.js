@@ -78,6 +78,7 @@ class OwnGauge {
     }
 
     set(value) {
+        this.gauge.animationSpeed = Math.abs(this.gauge.displayedValue - value)/2;
         this.gauge.set(value);
     }
 }
@@ -90,7 +91,7 @@ $(document).ready(function () {
 });
 
 function updateGauges() {
-    $.getJSON('google/getData.php', function (json) {
+    $.getJSON('./php/getData.php', function (json) {
         $.each(json, function (name, value) {
             if(!(name in gaugeStore.gauges)) {
                 gaugeStore.gauges[name] = new OwnGauge(gaugeStore.container, name);

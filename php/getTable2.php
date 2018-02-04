@@ -6,7 +6,9 @@
  * Time: 15:09
  */
 
-include("./classes/class.temperatur.php");
+include("../classes/class.temperatur.php");
+$tab = new temperatur("../config/config.php");
+
 
 if (empty($_GET["q"])) {
     $query = "MinMax-aktuellerTag";
@@ -18,10 +20,5 @@ if (empty($_GET["u"])) {
 } else {
     $ueber = $_GET["u"];
 }
-
-$tab = new temperatur();
-//echo $tab->build_table($tab->getTableData($query), $ueber);
-
-//echo("<div id='temperatur' style='border: 2px solid green'>" . $tab->aktuelleTemperaturen() . "</div>");
 
 echo($tab->aktuelleTemperaturen());

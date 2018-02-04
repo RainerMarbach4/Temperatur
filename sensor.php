@@ -7,7 +7,6 @@
  * Time: 17:00
  */
 
-
 spl_autoload_register(function ($class) {
     include 'classes/class.' . $class . '.php';
 });
@@ -17,8 +16,8 @@ spl_autoload_register(function ($class) {
 
 $temp = new sensor();
 $html = new html();
-$html->htmlAnf();
+//$html->htmlAnf();
 $temp->sensAnz();
-$html->htmlEnd();
+//$html->htmlEnd();
 
 include("./html/footer.html");

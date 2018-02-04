@@ -25,10 +25,10 @@ $rounded_seconds = round($now->getTimestamp() / (10 * 60)) * (10 * 60);
 $now->setTimestamp($rounded_seconds);
 $datenow = $now->format("Y-m-d H:i:00");
 
-$nowO = new DateTime();
+$now2 = new DateTime();
 $datenow2 = $now2->format("Y-m-d H:i:00");
 
-$hvalue = $value;
+$hvalue = $val;
 
 $sql = "INSERT INTO `DataTable` (`id`, `logdata`, `sensor`, `value`, `anmerkung` ) VALUES (NULL, \"$datenow\", '$sensor', $val,  \"$datenow2\");";
 //print_r($sql);

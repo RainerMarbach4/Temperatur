@@ -30,7 +30,7 @@ $datenow2 = $now2->format("Y-m-d H:i:00");
 
 $hvalue = $value;
 
-$sql = "INSERT INTO `DataTable` (`id`, `logdata`, `sensor`, `value`, `anmerkung` ) VALUES (NULL, \"$datenow\", '$sensor', $val, $datenow2);";
+$sql = "INSERT INTO `DataTable` (`id`, `logdata`, `sensor`, `value`, `anmerkung` ) VALUES (NULL, \"$datenow\", '$sensor', $val,  \"$datenow2\");";
 //print_r($sql);
 $mysqli->query($sql);
 

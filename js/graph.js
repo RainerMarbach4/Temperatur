@@ -58,6 +58,19 @@ $(document).ready(function(){
 	setInterval(updateGraph, 60000);
 });
 
+function momentGetIndexInArray(stack, needle) {
+    for(let i = 0; i < stack.length; i++) {
+        if(stack[i].isSame(needle, 'minute')) {
+            return i;
+        }
+    }
+	return -1;
+}
+
+function momentInArray(stack, needle) {
+	return momentGetIndexInArray(stack, needle) !== -1;
+}
+
 function updateGraph() {
 	let data = {
         field: 1,
@@ -67,7 +80,7 @@ function updateGraph() {
 	if(barGraph.data.labels.length !== 0) {
         data.lasttimestamp = barGraph.data.labels[barGraph.data.labels.length - 2].format(sensorDayTimeFormat);
 	} else {
-		data.lasttimestamp = "00:00";x
+		data.lasttimestamp = "00:00";
 	}
     $.ajax({
         url: "./sensor/sensor-tag2.php",
@@ -75,23 +88,25 @@ function updateGraph() {
         method: "GET",
         success: function(data) {
 
+            if(barGraph.data.labels.length < 1 || !momentInArray(barGraph.data.labels, moment("24:00", sensorDayTimeFormat))) {
+                barGraph.data.labels.push(moment("24:00", sensorDayTimeFormat));
+                barGraph.data.datasets[0].data.push(null);
+            }
+
         	for(let i in data) {
         		let mTime = moment(data[i].zeit, sensorDayTimeFormat);
-        		if(mTime in barGraph.data.labels) {
-        			// TODO update
+        		if(momentInArray(barGraph.data.labels, mTime)) {
+        			let index = momentGetIndexInArray(barGraph.data.labels, mTime);
+        			barGraph.data.datasets[0].data[index] = data[i].value;
 				} else {
-        			barGraph.labels.push(mTime);
-        			barGraph.datasets[0].data.push(data[i].value);
+        			barGraph.data.labels.splice(-1, 0, mTime);
+        			barGraph.data.datasets[0].data.splice(-1, 0, data[i].value);
 				}
 			}
 
-			if(!barGraph.data.labels[barGraph.data.labels.length - 1].isSame(moment("24:00", 'minute'))) {
-                barGraph.data.labels.push(moment("24:00", sensorDayTimeFormat));
-			}
-
-			let minTime = moment(barGraph.labels[0]);
+			let minTime = barGraph.data.labels[0].clone();
         	minTime.minute(0);
-        	barGraph.options.scale.xAxes[0].time.min = minTime;
+            barGraph.options.scales.xAxes[0].time.min = moment("00:00", sensorDayTimeFormat);
 
             barGraph.update();
         },

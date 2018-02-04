@@ -78,7 +78,6 @@ class OwnGauge {
     }
 
     set(value) {
-        this.gauge.animationSpeed = Math.abs(this.gauge.displayedValue - value)/2;
         this.gauge.set(value);
     }
 }
@@ -89,7 +88,6 @@ $(document).ready(function () {
     updateGauges();
     setInterval(updateGauges, 60 * 1000);
 });
-
 
 function updateGauges() {
     $.getJSON('./php/getData.php', function (json) {

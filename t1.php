@@ -7,9 +7,21 @@
  */
 function roundToQuarterHour($timestring) {
     $minutes = date('i', strtotime($timestring));
-    return $minutes - ($minutes % 15);
+    return $minutes - ($minutes % 5);
 }
 
-$t = roundToQuarterHour(date("YY-m-d"));
+$m = date("Y-m-d H:i:s");
+$t = roundToQuarterHour($m);
 
 echo $t;
+echo("<hr>");
+echo $m;
+echo("<hr>");
+echo date('i', strtotime($m));
+
+
+$seconds = time();
+$rounded_seconds = round($seconds / (10 * 60)) * (10 * 60);
+
+echo "Original: " . date('H:i', $seconds) . "\n";
+echo "Rounded: " . date('H:i', $rounded_seconds) . "\n";

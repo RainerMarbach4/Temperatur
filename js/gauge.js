@@ -43,9 +43,9 @@ let gaugeStore = {
     },
 
     preset: '' +
-    '<div id="gauge-{{id}}">\n' +
+    '<div id="gauge-{{id}}" style="min-width: 20%;">\n' +
     '    <div class="sensor-value"></div>\n' +
-    '    <canvas width=300 height=150 class="sensor-gauge"></canvas>\n' +
+    '    <canvas style="width: 100%; max-height: 200px" class="sensor-gauge"></canvas>\n' +
     '    <div class="sensor-name">{{name}}</div>\n' +
     '</div>',
 
@@ -60,8 +60,11 @@ class OwnGauge {
         let obj = $(preset.replaceAll("{{id}}", name).replaceAll("{{name}}", name));
         container.append(obj);
         let own = this;
+        own.obj = obj;
+        own.percent = 0;
         own.text = obj.find('.sensor-value');
         own.canvas = obj.find('.sensor-gauge');
+        own.ctx = own.canvas[0].getContext('2d');
         own.name = obj.find('.sensor-name');
         own.name.text(name);
 
@@ -80,13 +83,29 @@ class OwnGauge {
     set(value) {
         this.gauge.set(value);
     }
+
+    setWidth(percent) {
+        if(percent !== this.percent) {
+            this.obj.css('width', percent + "%");
+            this.canvas.attr('height', null);
+            this.canvas.attr('width', null);
+            let height = Math.ceil(this.canvas.height());
+            let width = Math.ceil(this.canvas.width());
+            this.canvas.attr('height', height);
+            this.canvas.attr('width', width);
+            this.ctx.height = height;
+            this.ctx.width = width;
+
+            this.percent = percent;
+        }
+    }
 }
 
 $(document).ready(function () {
     gaugeStore.container = $('#gauges');
 
     updateGauges();
-    setInterval(updateGauges, 60 * 1000);
+    setInterval(updateGauges, 1 * 1000);
 });
 
 function updateGauges() {
@@ -97,5 +116,9 @@ function updateGauges() {
             }
             gaugeStore.gauges[name].set(value);
         });
+        let width = Math.floor(100 / Object.keys(gaugeStore.gauges).length);
+        for(let gauge in gaugeStore.gauges) {
+            gaugeStore.gauges[gauge].setWidth(width);
+        }
     });
 }

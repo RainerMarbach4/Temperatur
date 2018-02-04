@@ -6,7 +6,6 @@ include("../config/config.php");
 
 $servername = $config["servername"];
 $username = $config["username"];
-
 $password = $config["password"];
 $dbname = $config["dbname"];
 

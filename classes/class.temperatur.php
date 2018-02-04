@@ -82,8 +82,7 @@ class temperatur
     }
 
 
-    public
-    function print_r($val) {
+    public function print_r($val) {
         echo '<pre>';
         print_r($val);
         echo '</pre>';

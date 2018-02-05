@@ -26,7 +26,7 @@ $now->setTimestamp($rounded_seconds);
 $datenow = $now->format("Y-m-d H:i:00");
 
 $now2 = new DateTime();
-$datenow2 = $now2->format("Y-m-d H:i:00");
+$datenow2 = $now2->format("Y-m-d H:i:s");
 
 $hvalue = $val;
 

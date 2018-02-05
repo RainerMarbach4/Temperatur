@@ -105,7 +105,7 @@ $(document).ready(function () {
     gaugeStore.container = $('#gauges');
 
     updateGauges();
-    setInterval(updateGauges, 1 * 1000);
+    setInterval(updateGauges, 60 * 1000);
 });
 
 function updateGauges() {

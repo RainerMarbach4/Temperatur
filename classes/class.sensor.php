@@ -13,6 +13,44 @@ class sensor extends temperatur
     public function setQuery($query) {
         parse_str($_SERVER['QUERY_STRING'], $this->query);
     }
+    public function getQuery(){
+        $this->print_r($this->query);
+    }
+
+    /**
+     * @return string
+     */
+    public function setSensorValue(){
+        if(isset($this->query["wert"])){
+            if(($this->query["wert"] < -60) or ($this->query["wert"] > 60)){
+                return "value out of ..";
+            }
+        }
+        if(isset($this->query["sensor"])){
+            $sensor =$this->query["sensor"];
+        }else{
+            return "no sensor";
+        }
+        if(isset($this->query["wert"])){
+            $val =$this->query["wert"];
+        }else{
+            return "no value";
+        }
+
+        $now = new DateTime();
+        $rounded_seconds = round($now->getTimestamp() / (10 * 60)) * (10 * 60);
+        $now->setTimestamp($rounded_seconds);
+        $datenow = $now->format("Y-m-d H:i:00");
+
+        $now2 = new DateTime();
+        $datenow2 = $now2->format("Y-m-d H:i:s");
+
+        $sql = "INSERT INTO `DataTable` (`id`, `logdata`, `sensor`, `value`, `anmerkung` ) VALUES (NULL, \"$datenow\", '$sensor', $val,  \"$datenow2\");";
+        $this->mysqli->query($sql);
+
+        //$this->print_r($sql);
+        return $this->mysqli->error;
+    }
 
     public function getSensorDay() {
         if (isset($this->query["lasttimestamp"])) {

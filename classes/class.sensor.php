@@ -10,30 +10,53 @@ class sensor extends temperatur
 {
     private $query;
 
-    public function setQuery($query) {
-        parse_str($_SERVER['QUERY_STRING'], $this->query);
+    /**
+     * @param $queryStr
+     */
+    public function setQuery($queryStr) {
+        parse_str($queryStr, $this->query);
     }
-    public function getQuery(){
-        $this->print_r($this->query);
+
+    /**
+     * @return mixed
+     */
+    public function getQuery() {
+        return $this->query;
+    }
+
+    /**
+     * @param $query
+     * @return array
+     */
+    function getQueryResultArray($query) {
+        $retArr = array();
+
+        if ($result = $this->mysqli->query($query)) {
+            while ($row = $result->fetch_array(MYSQLI_NUM)) {
+                $retArr[] = $row[0];
+            }
+            $result->free();
+        }
+        return $retArr;
     }
 
     /**
      * @return string
      */
-    public function setSensorValue(){
-        if(isset($this->query["wert"])){
-            if(($this->query["wert"] < -60) or ($this->query["wert"] > 60)){
+    public function setSensorValue() {
+        if (isset($this->query["wert"])) {
+            if (($this->query["wert"] < -60) or ($this->query["wert"] > 60)) {
                 return "value out of ..";
             }
         }
-        if(isset($this->query["sensor"])){
-            $sensor =$this->query["sensor"];
-        }else{
+        if (isset($this->query["sensor"])) {
+            $sensor = $this->query["sensor"];
+        } else {
             return "no sensor";
         }
-        if(isset($this->query["wert"])){
-            $val =$this->query["wert"];
-        }else{
+        if (isset($this->query["wert"])) {
+            $val = $this->query["wert"];
+        } else {
             return "no value";
         }
 
@@ -48,7 +71,6 @@ class sensor extends temperatur
         $sql = "INSERT INTO `DataTable` (`id`, `logdata`, `sensor`, `value`, `anmerkung` ) VALUES (NULL, \"$datenow\", '$sensor', $val,  \"$datenow2\");";
         $this->mysqli->query($sql);
 
-        //$this->print_r($sql);
         return $this->mysqli->error;
     }
 
@@ -58,11 +80,34 @@ class sensor extends temperatur
         } else {
             $tt = "00:00";
         }
-        $sql = "SELECT DATE_FORMAT(logdata,'%H:%i') zeit, value FROM `sensor-tag` 
+        if (isset($this->query["sens"])) {
+            // zeitachse
+            $sql = "SELECT DATE_FORMAT(logdata, '%H:%i') AS TT
+                        FROM T99
+                        WHERE T99.sensornr=1 AND DATE_FORMAT(logdata,'%H:%i') >= \"$tt\"
+                        ORDER BY T99.logdata";
+            $rows["zeit"] = $this->getQueryResultArray($sql);
+
+
+            // alle sensor werte der zeitachse entsprechend
+            $sql = "SELECT sensoren.sensorname
+                        FROM sensoren
+                        ORDER BY sensoren.sensorname";
+            $sensoren = $this->getQueryResultArray($sql);
+
+            foreach ($sensoren as $sensorName) {
+                $sql = "SELECT T99.value FROM T99
+                        WHERE T99.sensorname='$sensorName' AND DATE_FORMAT(logdata,'%H:%i') >= \"$tt\"
+                        ORDER BY T99.logdata";
+                $rows[$sensorName] = $this->getQueryResultArray($sql);
+            }
+        } else {
+            $sql = "SELECT DATE_FORMAT(logdata,'%H:%i') zeit, value FROM `sensor-tag` 
                       WHERE DATE_FORMAT(logdata,'%H:%i') >= \"$tt\"
                       ORDER BY 1";
-        $result = $this->mysqli->query($sql);
-        $rows = $result->fetch_all (MYSQLI_ASSOC);
+            $result = $this->mysqli->query($sql);
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+        }
         return json_encode($rows);
     }
 

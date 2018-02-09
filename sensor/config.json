@@ -1,6 +1,7 @@
 {
-	"sleep": 2,
-	"anzSensor": 3,
+	"sleep": 9,
+	"anzSensor": 9,
 	"titel": "Marbach 4",
 	"sensoren": ["28ffd19111737e", "28ffc2e261163d", "28ff390611634d"]
 }
+

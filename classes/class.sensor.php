@@ -40,10 +40,23 @@ class sensor extends temperatur
         return $retArr;
     }
 
+    public function checkSensor($sensor) {
+        $sql = "SELECT sensor FROM sensoren where sensor='$sensor'";
+        $result = $this->mysqli->query($sql);
+        if ($result) {
+            if ($result->num_rows == 0) {
+                $sql = "INSERT INTO  `d025a46b`.`sensoren` (`sensor`)
+                          VALUES ('$sensor')";
+                $this->mysqli->query($sql);
+            }
+        }
+    }
+
     /**
      * @return string
      */
     public function setSensorValue() {
+        $minutes = 10;
         if (isset($this->query["wert"])) {
             if (($this->query["wert"] < -60) or ($this->query["wert"] > 60)) {
                 return "value out of ..";
@@ -51,6 +64,7 @@ class sensor extends temperatur
         }
         if (isset($this->query["sensor"])) {
             $sensor = $this->query["sensor"];
+            $this->checkSensor($sensor);
         } else {
             return "no sensor";
         }
@@ -61,7 +75,7 @@ class sensor extends temperatur
         }
 
         $now = new DateTime();
-        $rounded_seconds = round($now->getTimestamp() / (10 * 60)) * (10 * 60);
+        $rounded_seconds = round($now->getTimestamp() / ($minutes * 60)) * ($minutes * 60);
         $now->setTimestamp($rounded_seconds);
         $datenow = $now->format("Y-m-d H:i:00");
 
